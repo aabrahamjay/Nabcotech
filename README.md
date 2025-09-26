@@ -4,7 +4,7 @@ A React-based food delivery website built by a team of 6 classmates. The project
 
 ✨ Features
 
-🍔 Browse and search food items
+🍔 Browse and food items
 
 🛒 Add items to cart
 
@@ -16,9 +16,9 @@ A React-based food delivery website built by a team of 6 classmates. The project
 
 🛠️ Tech Stack
 
-Frontend: React, React Router, Tailwind CSS (or CSS/Bootstrap if used)
+Frontend: React, React Router,  CSS/Bootstrap 
 
-State Management: React Context API / Redux (if applicable)
+State Management: React Context API / Redux 
 
 Version Control: Git & GitHub
 
@@ -48,7 +48,7 @@ Tunde
 Cherie
 Joshua
 Mirabel
-
+Samuel
 
 🚀 Future Improvements
 
