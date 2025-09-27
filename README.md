@@ -1,16 +1,61 @@
-# React + Vite
+Nabcotech Food Delivery 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based food delivery website built by a team of 6 classmates. The project demonstrates modern frontend development skills, teamwork, and practical implementation of a food ordering platform.
 
-Currently, two official plugins are available:
+✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🍔 Browse and food items
 
-## React Compiler
+🛒 Add items to cart
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+💳 Checkout with order summary
 
-## Expanding the ESLint configuration
+📱 Responsive design (mobile & desktop)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+⚡ Fast and interactive UI powered by React
+
+🛠️ Tech Stack
+
+Frontend: React, React Router,  CSS/Bootstrap 
+
+State Management: React Context API / Redux 
+
+Version Control: Git & GitHub
+
+📂 Project Structure
+nabcotech-food-delivery/
+├── public/             # Static assets
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Website pages (Home, Cart, Checkout, etc.)
+│   ├── context/        # State management (if used)
+│   ├── App.js          # Root component
+│   ├── index.js        # Entry point
+│   └── styles/         # CSS/Tailwind styles
+├── package.json        # Dependencies and scripts
+└── README.md           # Project documentation
+
+
+
+
+
+👥 Team Members
+
+This project was built by a class of 5 members:
+
+Abraham
+Tunde
+Cherie
+Joshua
+Mirabel
+Samuel
+
+🚀 Future Improvements
+
+🔐 User authentication & profiles
+
+🗺️ Live order tracking
+
+📦 Integration with real backend APIs
+
+💬 Customer reviews and ratings
