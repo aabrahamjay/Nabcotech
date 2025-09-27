@@ -34,7 +34,7 @@ const PlaceOrder = () => {
               <b>₦{getTotalCartAmount()===0?0:getTotalCartAmount()+ 500}</b>
             </div>
           </div>
-          <button onClick={() =>navigate('/order')}>Proceed To Checkout</button>
+          <button >Proceed To Payment</button>
         </div>
       </div>
     </form>
