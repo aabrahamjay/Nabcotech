@@ -42,7 +42,7 @@ const PlaceOrder = () => {
       }));
 
     // 1️⃣ Call backend to initiate transaction
-    const initRes = await fetch("http://localhost:5000/api/paystack/initiate", {
+    const initRes = await fetch("https://nabcotech.onrender.com/api/paystack/initiate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

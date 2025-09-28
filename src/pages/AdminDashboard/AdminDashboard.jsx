@@ -6,7 +6,7 @@ const AdminDashboard = () => {
   // Fetch all orders
   const fetchOrders = () => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/api/orders", {
+    fetch("https://nabcotech.onrender.com/api/orders", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -21,7 +21,7 @@ const AdminDashboard = () => {
   const markAsDelivered = async (orderId) => {
     const token = localStorage.getItem("token");
     const res = await fetch(
-      `http://localhost:5000/api/orders/${orderId}/deliver`,
+      `https://nabcotech.onrender.com/api/orders/${orderId}/deliver`,
       {
         method: "PUT",
         headers: {
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   const deleteOrder = async (orderId) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+    const res = await fetch(`https://nabcotech.onrender.com/api/orders/${orderId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
