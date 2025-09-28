@@ -1,6 +1,6 @@
 // src/pages/AdminLogin.jsx
 import React, { useState } from "react";
-import "./LoginPopup.css";
+import "./AdminLogin.css";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
