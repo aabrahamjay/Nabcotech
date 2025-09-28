@@ -1,24 +1,114 @@
-.place-order{
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: 50px;
-    margin-top: 100px;
+.place-order {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 50px;
+  margin-top: 100px;
+  padding: 0 20px; /* small padding for mobile */
 }
-.place-order-left{
-    width: 100%;
-    max-width: max(30%,500px);
+
+.place-order-left {
+  width: 100%;
+  max-width: max(30%, 500px);
 }
-.place-order-left .title{
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 50px;
+
+.place-order-left .title {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 30px;
 }
-.place-order-left input{
-    margin-bottom: 15px;
-    width: 100%;
+
+.place-order-left input {
+  margin-bottom: 15px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #c5c5c5;
+  border-radius: 4px;
+  outline-color: tomato;
+  font-size: 16px;
+}
+
+.multi-fields {
+  display: flex;
+  gap: 15px;
+}
+
+.multi-fields input {
+  flex: 1;
+}
+
+/* Right section (Cart Total) */
+.place-order-right {
+  width: 100%;
+  max-width: 400px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.cart-total h2 {
+  margin-bottom: 15px;
+}
+
+.cart-total-details {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.cart-total button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: tomato;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cart-total button:hover {
+  background: #e63e1c;
+}
+
+/* 📱 Responsive Styles */
+@media (max-width: 900px) {
+  .place-order {
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 50px;
+  }
+
+  .place-order-left {
+    max-width: 100%;
+  }
+
+  .place-order-right {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .place-order-left .title {
+    font-size: 24px;
+  }
+
+  .multi-fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .place-order-left input {
+    font-size: 14px;
     padding: 10px;
-    border:1px solid #c5c5c5;
-    border-radius: 4px;
-    outline-color: tomato ;
+  }
+
+  .cart-total button {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
