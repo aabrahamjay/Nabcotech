@@ -60,4 +60,31 @@ router.get("/", verifyAdmin, async (req, res) => {
   }
 });
 
+// Mark order as delivered
+router.put("/:id/deliver", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order)
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+
+    order.status = "Delivered";
+    await order.save();
+    res.json({ success: true, message: "Order marked as delivered" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Delete order
+router.delete("/:id", async (req, res) => {
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "Order deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 export default router;

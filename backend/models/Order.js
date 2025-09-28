@@ -7,6 +7,7 @@ const OrderSchema = new mongoose.Schema({
   items: Array,
   totalAmount: Number,
   paystackRef: String,
+  status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now },
 });
 
