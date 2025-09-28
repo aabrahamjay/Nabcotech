@@ -1,16 +1,27 @@
-// routes/adminRoutes.js
 import express from "express";
 import jwt from "jsonwebtoken";
-import Admin from "../models/Admin.js";
 import bcrypt from "bcrypt";
+import Admin from "../models/Admin.js";
 
 const router = express.Router();
+
+// Create first admin (run once then comment/remove)
+router.post("/register", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin = new Admin({ email, password: hashedPassword });
+    await admin.save();
+    res.json({ success: true, message: "Admin created" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // Admin login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const admin = await Admin.findOne({ email });
-
   if (!admin) return res.json({ success: false, message: "Admin not found" });
 
   const isMatch = await bcrypt.compare(password, admin.password);

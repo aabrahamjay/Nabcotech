@@ -3,7 +3,7 @@ import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount } = useContext(StoreContext);
+  const { getTotalCartAmount, cartItems, food_list } = useContext(StoreContext);
 
   // Total with delivery fee
   const totalAmount =
@@ -12,7 +12,7 @@ const PlaceOrder = () => {
   const payWithPaystack = (e) => {
     e.preventDefault();
 
-    // Get user info from form inputs (later you can use state for this)
+    // Collect form inputs
     const email = document.querySelector('input[type="email"]').value;
     const phone = document.querySelector('input[type="number"]').value;
     const firstName = document.querySelector(
@@ -27,13 +27,24 @@ const PlaceOrder = () => {
       return;
     }
 
-    // Paystack payment setup
+    // ✅ Prepare cart items to send to backend
+    const orderedItems = food_list
+      .filter((item) => cartItems[item._id] > 0)
+      .map((item) => ({
+        id: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: cartItems[item._id],
+        total: item.price * cartItems[item._id],
+      }));
+
+    // Paystack setup
     const handler = window.PaystackPop.setup({
-      key: "pk_test_eba97a61f898f2d39488c328aecb007fc3770517", // Replace with your Paystack public key
+      key: "pk_test_eba97a61f898f2d39488c328aecb007fc3770517", // replace with your Paystack public key
       email: email,
-      amount: totalAmount * 100, // kobo (multiply by 100)
+      amount: totalAmount * 100, // in kobo
       currency: "NGN",
-      ref: "" + Math.floor(Math.random() * 1000000000 + 1), // Unique ref
+      ref: "" + Math.floor(Math.random() * 1000000000 + 1), // unique ref
       metadata: {
         custom_fields: [
           {
@@ -44,8 +55,33 @@ const PlaceOrder = () => {
         ],
       },
       callback: function (response) {
-        alert("Payment successful. Reference: " + response.reference);
-        // 👉 You can now send the reference to your backend for verification
+        alert("Payment successful! Ref: " + response.reference);
+
+        // ✅ Send order details to backend
+        fetch("http://localhost:5000/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerName: `${firstName} ${lastName}`,
+            email,
+            phone,
+            items: orderedItems,
+            totalAmount,
+            paystackRef: response.reference,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Order saved! Admin notified ✅");
+            } else {
+              alert("Failed to save order: " + data.message);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Error sending order to backend");
+          });
       },
       onClose: function () {
         alert("Transaction was not completed, window closed.");
