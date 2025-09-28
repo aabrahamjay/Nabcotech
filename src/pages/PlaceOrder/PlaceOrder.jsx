@@ -3,7 +3,8 @@ import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, cartItems, food_list } = useContext(StoreContext);
+  const { getTotalCartAmount, cartItems, food_list, setCartItems } =
+    useContext(StoreContext);
 
   // Total with delivery fee
   const totalAmount =
@@ -13,17 +14,32 @@ const PlaceOrder = () => {
     e.preventDefault();
 
     // Collect form inputs
-    const email = document.querySelector('input[type="email"]').value;
-    const phone = document.querySelector('input[type="number"]').value;
-    const firstName = document.querySelector(
-      'input[placeholder="First Name"]'
-    ).value;
-    const lastName = document.querySelector(
-      'input[placeholder="LastName"]'
-    ).value;
+    const email = document.querySelector('input[type="email"]').value.trim();
+    const phone = document.querySelector('input[type="number"]').value.trim();
+    const firstName = document
+      .querySelector('input[placeholder="First Name"]')
+      .value.trim();
+    const lastName = document
+      .querySelector('input[placeholder="LastName"]')
+      .value.trim();
 
-    if (!email || !phone || !firstName || !lastName) {
-      alert("Please fill all details");
+    // ✅ Validate inputs
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!firstName) {
+      alert("Please enter your first name");
+      return;
+    }
+    if (!lastName) {
+      alert("Please enter your last name");
+      return;
+    }
+    if (!email || !emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+    if (!phone || phone.length < 10) {
+      alert("Please enter a valid phone number (at least 10 digits)");
       return;
     }
 
@@ -38,13 +54,13 @@ const PlaceOrder = () => {
         total: item.price * cartItems[item._id],
       }));
 
-    // Paystack setup
+    // Continue with Paystack setup...
     const handler = window.PaystackPop.setup({
-      key: "pk_test_eba97a61f898f2d39488c328aecb007fc3770517", // replace with your Paystack public key
-      email: email,
-      amount: totalAmount * 100, // in kobo
+      key: "pk_test_eba97a61f898f2d39488c328aecb007fc3770517",
+      email,
+      amount: totalAmount * 100,
       currency: "NGN",
-      ref: "" + Math.floor(Math.random() * 1000000000 + 1), // unique ref
+      ref: "" + Math.floor(Math.random() * 1000000000 + 1),
       metadata: {
         custom_fields: [
           {
@@ -57,7 +73,6 @@ const PlaceOrder = () => {
       callback: function (response) {
         alert("Payment successful! Ref: " + response.reference);
 
-        // ✅ Send order details to backend
         fetch("http://localhost:5000/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -74,6 +89,7 @@ const PlaceOrder = () => {
           .then((data) => {
             if (data.success) {
               alert("Order saved! Admin notified ✅");
+              setCartItems({});
             } else {
               alert("Failed to save order: " + data.message);
             }

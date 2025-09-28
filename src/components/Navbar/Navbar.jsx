@@ -30,13 +30,13 @@ const Navbar = ({ setShowLogin }) => {
         >
           Menu
         </a>
-        <a
+        {/*  <a
           href="#app-download"
           onClick={() => setMenu("mobile-app")}
           className={menu === "mobile-app" ? "active" : ""}
         >
           Mobile-app
-        </a>
+        </a> */}
         <a
           href="#footer"
           onClick={() => setMenu("contact-us")}
@@ -52,7 +52,7 @@ const Navbar = ({ setShowLogin }) => {
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        <button onClick={() => setShowLogin(true)}>Sign In</button>
+        {/*  <button onClick={() => setShowLogin(true)}>Sign In</button> */}
       </div>
     </div>
   );
