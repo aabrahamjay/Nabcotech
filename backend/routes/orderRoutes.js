@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
 
     await transporter.sendMail({
       from: process.env.ADMIN_EMAIL,
-      to: process.env.ADMIN_EMAIL,
+      to: process.env.ADMIN_EMAILS.split(","),
       subject: "New Order Received",
       text: `New order from ${req.body.customerName}, total ₦${req.body.totalAmount}`,
     });
