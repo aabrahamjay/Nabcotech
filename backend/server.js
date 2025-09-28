@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import paystackRoute from "./routes/paystack.js";
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 // Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/paystack", paystackRoute);
 
 mongoose
   .connect(process.env.MONGO_URI)
