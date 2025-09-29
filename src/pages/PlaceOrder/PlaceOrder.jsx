@@ -42,17 +42,20 @@ const PlaceOrder = () => {
       }));
 
     // 1️⃣ Call backend to initiate transaction
-    const initRes = await fetch("https://nabcotech.onrender.com/api/paystack/initiate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customerName: `${firstName} ${lastName}`,
-        email,
-        phone,
-        items: orderedItems,
-        totalAmount,
-      }),
-    });
+    const initRes = await fetch(
+      "https://nabcotech.onrender.com/api/paystack/initiate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: `${firstName} ${lastName}`,
+          email,
+          phone,
+          items: orderedItems,
+          totalAmount,
+        }),
+      }
+    );
     const initData = await initRes.json();
 
     if (!initData.success)
@@ -68,7 +71,7 @@ const PlaceOrder = () => {
       callback: function (response) {
         (async () => {
           const verifyRes = await fetch(
-            "http://localhost:5000/api/paystack/verify",
+            "https://nabcotech.onrender.com/api/paystack/verify",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
