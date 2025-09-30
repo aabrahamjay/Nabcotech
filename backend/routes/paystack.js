@@ -27,7 +27,7 @@ router.post("/initiate", async (req, res) => {
             phone,
             items,
           },
-          callback_url: `${process.env.FRONTEND_URL}/payment-success`,
+          callback_url: `${process.env.FRONTEND_URL}/order`,
         }),
       }
     );

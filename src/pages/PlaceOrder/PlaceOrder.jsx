@@ -1,14 +1,55 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { StoreContext } from "../../context/StoreContext";
+import API_BASE_URL from "../../config";
 import "./PlaceOrder.css";
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, cartItems, food_list, setCartItems } =
     useContext(StoreContext);
+
   const totalAmount =
     getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 500;
 
-  const payWithPaystack = async (e) => {
+  // Verify payment after redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const reference = urlParams.get("reference");
+
+    if (reference) {
+      // Retrieve saved checkout data from localStorage
+      const orderData = JSON.parse(localStorage.getItem("pendingOrder"));
+
+      (async () => {
+        try {
+          const verifyRes = await fetch(`${API_BASE_URL}/paystack/verify`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              reference,
+              ...orderData, // send customerName, email, phone, items, totalAmount
+            }),
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            alert("✅ Payment successful and order saved!");
+            setCartItems({});
+            localStorage.removeItem("pendingOrder");
+            window.history.replaceState({}, document.title, "/placeorder");
+          } else {
+            alert("❌ Payment verification failed: " + verifyData.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Something went wrong verifying payment.");
+        }
+      })();
+    }
+  }, [setCartItems]);
+
+  // Place order
+  const placeOrder = async (e) => {
     e.preventDefault();
 
     const email = document.querySelector('input[type="email"]').value.trim();
@@ -19,8 +60,8 @@ const PlaceOrder = () => {
     const lastName = document
       .querySelector('input[placeholder="LastName"]')
       .value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (
       !firstName ||
       !lastName ||
@@ -41,10 +82,20 @@ const PlaceOrder = () => {
         quantity: cartItems[item._id],
       }));
 
-    // 1️⃣ Call backend to initiate transaction
-    const initRes = await fetch(
-      "https://nabcotech.onrender.com/api/paystack/initiate",
-      {
+    // Save pending order to localStorage (so we can resend after redirect)
+    localStorage.setItem(
+      "pendingOrder",
+      JSON.stringify({
+        customerName: `${firstName} ${lastName}`,
+        email,
+        phone,
+        items: orderedItems,
+        totalAmount,
+      })
+    );
+
+    try {
+      const initRes = await fetch(`${API_BASE_URL}/paystack/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,53 +105,20 @@ const PlaceOrder = () => {
           items: orderedItems,
           totalAmount,
         }),
+      });
+
+      const initData = await initRes.json();
+
+      if (!initData.success) {
+        return alert("Payment initiation failed: " + initData.message);
       }
-    );
-    const initData = await initRes.json();
 
-    if (!initData.success)
-      return alert("Payment initiation failed: " + initData.message);
-
-    // 2️⃣ Open Paystack iframe with returned authorization_url
-    const handler = window.PaystackPop.setup({
-      key: "pk_test_eba97a61f898f2d39488c328aecb007fc3770517", // public key
-      email,
-      amount: totalAmount * 100,
-      currency: "NGN",
-      ref: initData.reference,
-      callback: function (response) {
-        (async () => {
-          const verifyRes = await fetch(
-            "https://nabcotech.onrender.com/api/paystack/verify",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                reference: response.reference, // better: use response.reference
-                customerName: `${firstName} ${lastName}`,
-                email,
-                phone,
-                items: orderedItems,
-                totalAmount,
-              }),
-            }
-          );
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) {
-            alert("Payment successful and order saved ✅");
-            setCartItems({});
-          } else {
-            alert("Payment verification failed: " + verifyData.message);
-          }
-        })();
-      },
-
-      onClose: function () {
-        alert("Payment not completed.");
-      },
-    });
-
-    handler.openIframe();
+      // Redirect to Paystack checkout
+      window.location.href = initData.authorization_url;
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -121,7 +139,7 @@ const PlaceOrder = () => {
           <div>
             <div className="cart-total-details">
               <p>Subtotal</p>
-              <p> ₦{getTotalCartAmount()}</p>
+              <p>₦{getTotalCartAmount()}</p>
             </div>
             <hr />
             <div className="cart-total-details">
@@ -134,7 +152,7 @@ const PlaceOrder = () => {
               <b>₦{totalAmount}</b>
             </div>
           </div>
-          <button onClick={payWithPaystack}>Proceed To Payment</button>
+          <button onClick={placeOrder}>Proceed To Payment</button>
         </div>
       </div>
     </form>
