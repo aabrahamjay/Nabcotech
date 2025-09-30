@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_BASE_URL from "../../config";
 
 const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -6,7 +7,7 @@ const AdminDashboard = () => {
   // Fetch all orders
   const fetchOrders = () => {
     const token = localStorage.getItem("token");
-    fetch(`${API_BASE_URL}//api/orders`, {
+    fetch(`${API_BASE_URL}/orders`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -20,16 +21,13 @@ const AdminDashboard = () => {
   // ✅ Mark as delivered
   const markAsDelivered = async (orderId) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(
-      `https://nabcotech.onrender.com/api/orders/${orderId}/deliver`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}/deliver`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await res.json();
     if (data.success) {
       alert("Order marked as delivered ✅");
@@ -43,13 +41,10 @@ const AdminDashboard = () => {
   const deleteOrder = async (orderId) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     const token = localStorage.getItem("token");
-    const res = await fetch(
-      `https://nabcotech.onrender.com/api/orders/${orderId}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await res.json();
     if (data.success) {
       alert("Order deleted ❌");
