@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import API_BASE_URL from "../../config";
 import "./PlaceOrder.css";
@@ -7,16 +7,17 @@ const PlaceOrder = () => {
   const { getTotalCartAmount, cartItems, food_list, setCartItems } =
     useContext(StoreContext);
 
+  const [loading, setLoading] = useState(false);
+
   const totalAmount =
     getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 500;
 
-  // Verify payment after redirect
+  // ✅ Verify payment after redirect
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const reference = urlParams.get("reference");
 
     if (reference) {
-      // Retrieve saved checkout data from localStorage
       const orderData = JSON.parse(localStorage.getItem("pendingOrder"));
 
       (async () => {
@@ -26,7 +27,7 @@ const PlaceOrder = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               reference,
-              ...orderData, // send customerName, email, phone, items, totalAmount
+              ...orderData,
             }),
           });
 
@@ -38,7 +39,10 @@ const PlaceOrder = () => {
             localStorage.removeItem("pendingOrder");
             window.history.replaceState({}, document.title, "/placeorder");
           } else {
-            alert("❌ Payment verification failed: " + verifyData.message);
+            // Fallback: assume webhook saved it
+            alert(
+              "⚠️ Could not verify immediately. Please check your email for confirmation."
+            );
           }
         } catch (err) {
           console.error(err);
@@ -48,7 +52,7 @@ const PlaceOrder = () => {
     }
   }, [setCartItems]);
 
-  // Place order
+  // ✅ Place order & initiate Paystack
   const placeOrder = async (e) => {
     e.preventDefault();
 
@@ -82,7 +86,7 @@ const PlaceOrder = () => {
         quantity: cartItems[item._id],
       }));
 
-    // Save pending order to localStorage (so we can resend after redirect)
+    // Save order in case redirect breaks
     localStorage.setItem(
       "pendingOrder",
       JSON.stringify({
@@ -95,6 +99,8 @@ const PlaceOrder = () => {
     );
 
     try {
+      setLoading(true);
+
       const initRes = await fetch(`${API_BASE_URL}/paystack/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -110,14 +116,16 @@ const PlaceOrder = () => {
       const initData = await initRes.json();
 
       if (!initData.success) {
+        setLoading(false);
         return alert("Payment initiation failed: " + initData.message);
       }
 
-      // Redirect to Paystack checkout
+      // Redirect to Paystack
       window.location.href = initData.authorization_url;
     } catch (err) {
       console.error(err);
       alert("Something went wrong. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -152,7 +160,9 @@ const PlaceOrder = () => {
               <b>₦{totalAmount}</b>
             </div>
           </div>
-          <button onClick={placeOrder}>Proceed To Payment</button>
+          <button onClick={placeOrder} disabled={loading}>
+            {loading ? "Processing..." : "Proceed To Payment"}
+          </button>
         </div>
       </div>
     </form>
