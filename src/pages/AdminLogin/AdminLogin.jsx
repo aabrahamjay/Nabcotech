@@ -1,6 +1,7 @@
 // src/pages/AdminLogin.jsx
 import React, { useState } from "react";
 import "./AdminLogin.css";
+import API_BASE_URL from "../../config";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +9,7 @@ const AdminLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await fetch("https://nabcotech.onrender.com/api/admin/login", {
+    const response = await fetch(`${API_BASE_URL}/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
